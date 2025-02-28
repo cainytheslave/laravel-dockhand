@@ -1,10 +1,10 @@
 <?php
 
-namespace Cainy\Vessel\Tests;
+namespace Cainy\Dockhand\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Cainy\Vessel\VesselServiceProvider;
+use Cainy\Dockhand\DockhandServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -13,14 +13,14 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Cainy\\Vessel\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Cainy\\Dockhand\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            VesselServiceProvider::class,
+            DockhandServiceProvider::class,
         ];
     }
 
@@ -29,7 +29,7 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
 
         /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-oci_table.php.stub';
+        $migration = include __DIR__.'/../database/migrations/create_laravel-dockhand_table.php.stub';
         $migration->up();
         */
     }

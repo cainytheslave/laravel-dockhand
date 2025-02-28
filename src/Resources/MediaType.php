@@ -1,5 +1,5 @@
 <?php
-namespace Cainy\Vessel\Resources;
+namespace Cainy\Dockhand\Resources;
 
 use Illuminate\Support\Facades\Log;
 use ValueError;

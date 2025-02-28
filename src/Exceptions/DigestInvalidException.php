@@ -1,6 +1,6 @@
 <?php
 
-namespace Cainy\Vessel\Exceptions;
+namespace Cainy\Dockhand\Exceptions;
 
 use Exception;
 

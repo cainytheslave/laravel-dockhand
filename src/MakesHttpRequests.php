@@ -1,31 +1,31 @@
 <?php
 
-namespace Cainy\Vessel;
+namespace Cainy\Dockhand;
 
 use Exception;
 
 use GuzzleHttp\Exception\GuzzleException;
-use Cainy\Vessel\Exceptions\BlobUnknownException;
-use Cainy\Vessel\Exceptions\BlobUploadInvalidException;
-use Cainy\Vessel\Exceptions\BlobUploadUnknownException;
-use Cainy\Vessel\Exceptions\DeniedException;
-use Cainy\Vessel\Exceptions\DigestInvalidException;
-use Cainy\Vessel\Exceptions\ManifestBlobUnknownException;
-use Cainy\Vessel\Exceptions\ManifestInvalidException;
-use Cainy\Vessel\Exceptions\ManifestUnknownException;
-use Cainy\Vessel\Exceptions\ManifestUnverifiedException;
-use Cainy\Vessel\Exceptions\NameInvalidException;
-use Cainy\Vessel\Exceptions\NameUnknownException;
-use Cainy\Vessel\Exceptions\PaginationNumberInvalidException;
-use Cainy\Vessel\Exceptions\ParseException;
-use Cainy\Vessel\Exceptions\RangeInvalidException;
-use Cainy\Vessel\Exceptions\SizeInvalidException;
-use Cainy\Vessel\Exceptions\TagInvalidException;
-use Cainy\Vessel\Exceptions\TimeoutException;
-use Cainy\Vessel\Exceptions\TooManyRequestsException;
-use Cainy\Vessel\Exceptions\UnauthorizedException;
-use Cainy\Vessel\Exceptions\UnknownException;
-use Cainy\Vessel\Exceptions\UnsupportedException;
+use Cainy\Dockhand\Exceptions\BlobUnknownException;
+use Cainy\Dockhand\Exceptions\BlobUploadInvalidException;
+use Cainy\Dockhand\Exceptions\BlobUploadUnknownException;
+use Cainy\Dockhand\Exceptions\DeniedException;
+use Cainy\Dockhand\Exceptions\DigestInvalidException;
+use Cainy\Dockhand\Exceptions\ManifestBlobUnknownException;
+use Cainy\Dockhand\Exceptions\ManifestInvalidException;
+use Cainy\Dockhand\Exceptions\ManifestUnknownException;
+use Cainy\Dockhand\Exceptions\ManifestUnverifiedException;
+use Cainy\Dockhand\Exceptions\NameInvalidException;
+use Cainy\Dockhand\Exceptions\NameUnknownException;
+use Cainy\Dockhand\Exceptions\PaginationNumberInvalidException;
+use Cainy\Dockhand\Exceptions\ParseException;
+use Cainy\Dockhand\Exceptions\RangeInvalidException;
+use Cainy\Dockhand\Exceptions\SizeInvalidException;
+use Cainy\Dockhand\Exceptions\TagInvalidException;
+use Cainy\Dockhand\Exceptions\TimeoutException;
+use Cainy\Dockhand\Exceptions\TooManyRequestsException;
+use Cainy\Dockhand\Exceptions\UnauthorizedException;
+use Cainy\Dockhand\Exceptions\UnknownException;
+use Cainy\Dockhand\Exceptions\UnsupportedException;
 use Psr\Http\Message\ResponseInterface;
 
 trait MakesHttpRequests

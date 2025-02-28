@@ -1,13 +1,13 @@
 <?php
 
-namespace Cainy\Vessel;
+namespace Cainy\Dockhand;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Cainy\Vessel\Commands\VesselCommand;
-use Cainy\Vessel\Support\JwtService;
+use Cainy\Dockhand\Commands\DockhandCommand;
+use Cainy\Dockhand\Support\JwtService;
 
-class VesselServiceProvider extends PackageServiceProvider
+class DockhandServiceProvider extends PackageServiceProvider
 {
     public function register(): void
     {
@@ -21,8 +21,8 @@ class VesselServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('laravel-vessel')
+            ->name('laravel-Dockhand')
             ->hasConfigFile()
-            ->hasCommand(VesselCommand::class);
+            ->hasCommand(DockhandCommand::class);
     }
 }

@@ -1,23 +1,23 @@
 <?php
 
-namespace Cainy\Vessel;
+namespace Cainy\Dockhand;
 
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
- * @mixin LaravelOci
+ * @mixin Dockhand
  */
-class LaravelOciManager
+class DockhandManager
 {
     use ForwardsCalls;
 
     /**
      * The LaravelOci instance.
      *
-     * @var LaravelOci
+     * @var Dockhand
      */
-    protected LaravelOci $oci;
+    protected Dockhand $oci;
 
     /**
      * Create a new LaravelOciManager instance.
@@ -27,7 +27,7 @@ class LaravelOciManager
      */
     public function __construct(string $token, ?HttpClient $guzzle = null)
     {
-        $this->oci = new LaravelOci($token, $guzzle);
+        $this->oci = new Dockhand($token, $guzzle);
     }
 
     /**

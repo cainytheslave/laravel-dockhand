@@ -1,6 +1,6 @@
 <?php
 
-namespace Cainy\Vessel\Support;
+namespace Cainy\Dockhand\Support;
 
 use Base32\Base32;
 use Closure;
@@ -89,15 +89,14 @@ class JwtService
      *
      * @param Closure $closure
      * @return UnencryptedToken
-     * @throws Exception
      */
     public function createToken(Closure $closure): UnencryptedToken
     {
         $builder = $this->config->builder();
 
         $builder = $builder
-            ->issuedAt(new DateTimeImmutable(now()))
-            ->canOnlyBeUsedAfter(new DateTimeImmutable(now()))
+            ->issuedAt(now()->toDateTimeImmutable())
+            ->canOnlyBeUsedAfter(now()->toDateTimeImmutable())
             ->identifiedBy(Uuid::uuid4()->toString());
 
         return $closure($builder)->getToken($this->config->signer(), $this->config->signingKey());
@@ -115,9 +114,9 @@ class JwtService
         $builder = $this->config->builder();
 
         $builder = $builder
-            ->issuedAt(new DateTimeImmutable(now()))
-            ->canOnlyBeUsedAfter(new DateTimeImmutable(now()))
-            ->expiresAt(new DateTimeImmutable(now()->addMinutes(5)))
+            ->issuedAt(now()->toDateTimeImmutable())
+            ->canOnlyBeUsedAfter(now()->toDateTimeImmutable())
+            ->expiresAt(now()->addMinutes(5)->toDateTimeImmutable())
             ->identifiedBy(Uuid::uuid4()->toString())
             ->withHeader('kid', $this->kid);
 

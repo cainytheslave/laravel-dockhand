@@ -1,10 +1,10 @@
 <?php
 
-namespace Cainy\Vessel;
+namespace Cainy\Dockhand;
 
 use GuzzleHttp\Client as HttpClient;
 
-class LaravelOci
+class Dockhand
 {
     use MakesHttpRequests;
 
