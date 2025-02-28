@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Cainy\Vessel\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class VesselCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-oci';
 
     public $description = 'My command';
 
