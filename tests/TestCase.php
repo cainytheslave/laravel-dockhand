@@ -2,9 +2,9 @@
 
 namespace Cainy\Dockhand\Tests;
 
+use Cainy\Dockhand\DockhandServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Cainy\Dockhand\DockhandServiceProvider;
 
 class TestCase extends Orchestra
 {

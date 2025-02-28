@@ -4,7 +4,6 @@ namespace Cainy\Dockhand\Support;
 
 use Base32\Base32;
 use Closure;
-use DateTimeImmutable;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Lcobucci\Clock\FrozenClock;
@@ -23,13 +22,16 @@ use Ramsey\Uuid\Uuid;
 class JwtService
 {
     private Configuration $config;
+
     private string $kid;
+
     private InMemory $publicKey;
+
     private InMemory $privateKey;
 
     public function __construct()
     {
-        $signer = new ES256();
+        $signer = new ES256;
 
         $this->privateKey = InMemory::file(config('oci.jwt_private_key'));
         $this->publicKey = InMemory::file(config('oci.jwt_public_key'));
@@ -46,9 +48,6 @@ class JwtService
     /**
      * Generate the key id (kid), which is used by the registry
      * to identify which public key to use for verification.
-     *
-     * @param InMemory $privateKey
-     * @return string
      */
     private static function generateKeyId(InMemory $privateKey): string
     {
@@ -86,9 +85,6 @@ class JwtService
 
     /**
      * Create a general JWT token for use in the application.
-     *
-     * @param Closure $closure
-     * @return UnencryptedToken
      */
     public function createToken(Closure $closure): UnencryptedToken
     {
@@ -105,8 +101,6 @@ class JwtService
     /**
      * Create a JWT token that can be used to authenticate at the registry.
      *
-     * @param Closure $closure
-     * @return UnencryptedToken
      * @throws Exception
      */
     public function createRegistryToken(Closure $closure): UnencryptedToken
@@ -125,19 +119,15 @@ class JwtService
 
     /**
      * Validate a JWT token that was issued by this service.
-     *
-     * @param string $token
-     * @param Closure $closure
-     * @return bool
      */
     public function validateToken(string $token, Closure $closure): bool
     {
         // Parse token
-        $parser = new Parser(new JoseEncoder());
+        $parser = new Parser(new JoseEncoder);
         $token = $parser->parse($token);
 
         // Validate token
-        $validator = new Validator();
+        $validator = new Validator;
 
         try {
             $closure($validator, $token);
@@ -149,6 +139,7 @@ class JwtService
             foreach ($e->violations() as $v) {
                 Log::channel('stderr')->info($v);
             }
+
             return false;
         }
     }

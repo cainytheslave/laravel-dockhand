@@ -3,7 +3,6 @@
 namespace Cainy\Dockhand\Commands;
 
 use Cainy\Dockhand\Support\JwtService;
-use Exception;
 use Illuminate\Console\Command;
 use Lcobucci\JWT\Builder;
 

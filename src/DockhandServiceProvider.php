@@ -2,10 +2,10 @@
 
 namespace Cainy\Dockhand;
 
-use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Cainy\Dockhand\Commands\DockhandCommand;
 use Cainy\Dockhand\Support\JwtService;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class DockhandServiceProvider extends PackageServiceProvider
 {
@@ -14,7 +14,7 @@ class DockhandServiceProvider extends PackageServiceProvider
         parent::register();
 
         $this->app->singleton(JwtService::class, function () {
-            return new JwtService();
+            return new JwtService;
         });
     }
 
