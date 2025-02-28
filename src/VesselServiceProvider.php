@@ -2,10 +2,10 @@
 
 namespace Cainy\Vessel;
 
-use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Cainy\Vessel\Commands\VesselCommand;
 use Cainy\Vessel\Support\JwtService;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class VesselServiceProvider extends PackageServiceProvider
 {
@@ -14,7 +14,7 @@ class VesselServiceProvider extends PackageServiceProvider
         parent::register();
 
         $this->app->singleton(JwtService::class, function () {
-            return new JwtService();
+            return new JwtService;
         });
     }
 

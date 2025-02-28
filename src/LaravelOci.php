@@ -10,22 +10,16 @@ class LaravelOci
 
     /**
      * The Forge API Key.
-     *
-     * @var string
      */
     protected string $apiKey;
 
     /**
      * The Guzzle HTTP Client instance.
-     *
-     * @var HttpClient
      */
     public HttpClient $guzzle;
 
     /**
      * Number of seconds a request is retried.
-     *
-     * @var int
      */
     public int $timeout = 30;
 
@@ -63,7 +57,7 @@ class LaravelOci
     /**
      * Set the api key and set up the guzzle request object.
      *
-     * @param HttpClient|null  $guzzle
+     * @param  HttpClient|null  $guzzle
      * @return $this
      */
     public function setApiKey(string $apiKey, $guzzle = null)

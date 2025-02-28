@@ -1,4 +1,5 @@
 <?php
+
 namespace Cainy\Vessel\Resources;
 
 use Illuminate\Support\Facades\Log;
@@ -37,6 +38,7 @@ enum MediaType: string
             return self::from($mediaType);
         } catch (ValueError) {
             Log::warning("Unknown media type: {$mediaType}");
+
             return self::CUSTOM;
         }
     }

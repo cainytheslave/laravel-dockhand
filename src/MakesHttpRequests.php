@@ -2,9 +2,6 @@
 
 namespace Cainy\Vessel;
 
-use Exception;
-
-use GuzzleHttp\Exception\GuzzleException;
 use Cainy\Vessel\Exceptions\BlobUnknownException;
 use Cainy\Vessel\Exceptions\BlobUploadInvalidException;
 use Cainy\Vessel\Exceptions\BlobUploadUnknownException;
@@ -26,6 +23,8 @@ use Cainy\Vessel\Exceptions\TooManyRequestsException;
 use Cainy\Vessel\Exceptions\UnauthorizedException;
 use Cainy\Vessel\Exceptions\UnknownException;
 use Cainy\Vessel\Exceptions\UnsupportedException;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
 trait MakesHttpRequests
@@ -33,8 +32,6 @@ trait MakesHttpRequests
     /**
      * Make a GET request to Registry and return the response.
      *
-     * @param string $uri
-     * @return mixed
      * @throws GuzzleException
      */
     public function get(string $uri): mixed
@@ -45,9 +42,6 @@ trait MakesHttpRequests
     /**
      * Make a POST request to Registry and return the response.
      *
-     * @param string $uri
-     * @param array $payload
-     * @return mixed
      * @throws GuzzleException
      */
     public function post(string $uri, array $payload = []): mixed
@@ -58,9 +52,6 @@ trait MakesHttpRequests
     /**
      * Make a PUT request to Registry and return the response.
      *
-     * @param string $uri
-     * @param array $payload
-     * @return mixed
      * @throws GuzzleException
      */
     public function put(string $uri, array $payload = []): mixed
@@ -71,9 +62,6 @@ trait MakesHttpRequests
     /**
      * Make a DELETE request to registry and return the response.
      *
-     * @param string $uri
-     * @param array $payload
-     * @return mixed
      * @throws GuzzleException
      */
     public function delete(string $uri, array $payload = []): mixed
@@ -84,10 +72,6 @@ trait MakesHttpRequests
     /**
      * Make request to registry and return the response.
      *
-     * @param string $verb
-     * @param string $uri
-     * @param array $payload
-     * @return mixed
      * @throws GuzzleException
      * @throws Exception
      */
@@ -115,8 +99,6 @@ trait MakesHttpRequests
     /**
      * Handle the request error.
      *
-     * @param ResponseInterface $response
-     * @return void
      *
      * @throws BlobUnknownException
      * @throws BlobUploadInvalidException
@@ -142,12 +124,12 @@ trait MakesHttpRequests
     protected function handleRequestError(ResponseInterface $response): void
     {
         $body = json_decode((string) $response->getBody());
-        if (!isset($body['errors'])) {
+        if (! isset($body['errors'])) {
             throw new ParseException("Expected error response to have 'errors' property.");
         }
 
         if (empty($errors = $body['errors'])) {
-            throw new ParseException("Expected non-empty array as error property.");
+            throw new ParseException('Expected non-empty array as error property.');
         }
 
         $code = $errors['code'];
@@ -179,10 +161,6 @@ trait MakesHttpRequests
     /**
      * Retry the callback or fail after x seconds.
      *
-     * @param int $timeout
-     * @param callable $callback
-     * @param int $sleep
-     * @return mixed
      *
      * @throws TimeoutException
      */

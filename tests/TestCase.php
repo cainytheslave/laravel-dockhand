@@ -2,9 +2,9 @@
 
 namespace Cainy\Vessel\Tests;
 
+use Cainy\Vessel\VesselServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Cainy\Vessel\VesselServiceProvider;
 
 class TestCase extends Orchestra
 {
