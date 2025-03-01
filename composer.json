@@ -19,12 +19,13 @@
     ],
     "require": {
         "php": "^8.4",
-        "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^10.0||^11.0||^12.0",
         "ext-openssl": "*",
         "christian-riesen/base32": "^1.6",
+        "illuminate/contracts": "^10.0||^11.0||^12.0",
+        "laravel/forge-sdk": "^3.21",
         "lcobucci/clock": "^3.3",
-        "lcobucci/jwt": "^5.5"
+        "lcobucci/jwt": "^5.5",
+        "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
         "laravel/pint": "^1.14",

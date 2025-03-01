@@ -7,7 +7,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Lcobucci\JWT\Builder;
 
-class DockhandCommand extends Command
+class NotifyTokenCommand extends Command
 {
     public $signature = 'dockhand:notify-token';
 

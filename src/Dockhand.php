@@ -2,52 +2,64 @@
 
 namespace Cainy\Dockhand;
 
+use Cainy\Dockhand\Actions\ManagesRegistry;
 use GuzzleHttp\Client as HttpClient;
 
 class Dockhand
 {
-    use MakesHttpRequests;
+    use ManagesRegistry,
+        MakesHttpRequests;
 
     /**
-     * The Forge API Key.
+     * The base URL of the registry.
+     *
+     * @var string
      */
-    protected string $apiKey;
+    protected string $baseUrl;
 
     /**
      * The Guzzle HTTP Client instance.
+     *
+     * @var HttpClient
      */
     public HttpClient $guzzle;
 
     /**
      * Number of seconds a request is retried.
+     *
+     * @var int
      */
     public int $timeout = 30;
 
     /**
-     * Create a new Forge instance.
+     * Create a new Dockhand instance.
      *
      * @return void
      */
-    public function __construct(?string $apiKey = null, ?HttpClient $guzzle = null)
+    public function __construct(string $baseUrl)
     {
-        if (! is_null($apiKey)) {
-            $this->setApiKey($apiKey, $guzzle);
-        }
+        $this->baseUrl = $baseUrl;
 
-        if (! is_null($guzzle)) {
-            $this->guzzle = $guzzle;
-        }
+        $this->guzzle = new HttpClient([
+            'base_uri' => $baseUrl,
+            'http_errors' => false,
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'User-Agent' => 'Laravel Dockhand PHP/1.0',
+            ],
+        ]);
     }
 
     /**
      * Transform the items of the collection to the given class.
      *
-     * @param  array  $collection
+     * @param array $collection
      * @param  string  $class
-     * @param  array  $extraData
+     * @param array $extraData
      * @return array
      */
-    protected function transformCollection($collection, $class, $extraData = [])
+    protected function transformCollection(array $collection, string $class, array $extraData = []): array
     {
         return array_map(function ($data) use ($class, $extraData) {
             return new $class($data + $extraData, $this);
@@ -55,23 +67,24 @@ class Dockhand
     }
 
     /**
-     * Set the api key and set up the guzzle request object.
+     * Set the base url and set up the guzzle request object.
      *
-     * @param  HttpClient|null  $guzzle
+     * @param string $baseUrl
+     * @param HttpClient|null $guzzle
      * @return $this
      */
-    public function setApiKey(string $apiKey, $guzzle = null)
+    public function setBaseUrl(string $baseUrl, HttpClient|null $guzzle = null): static
     {
-        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
 
-        $this->guzzle = $guzzle ?: new HttpClient([
-            'base_uri' => 'https://forge.laravel.com/api/v1/',
+        $this->guzzle = new HttpClient([
+            'base_uri' => $baseUrl,
             'http_errors' => false,
             'headers' => [
-                'Authorization' => 'Bearer '.$this->apiKey,
+                'Authorization' => 'Bearer ???',
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'User-Agent' => 'Laravel Forge PHP/3.0',
+                'User-Agent' => 'Laravel Dockhand PHP/1.0',
             ],
         ]);
 
@@ -81,10 +94,10 @@ class Dockhand
     /**
      * Set a new timeout.
      *
-     * @param  int  $timeout
+     * @param int $timeout
      * @return $this
      */
-    public function setTimeout($timeout)
+    public function setTimeout(int $timeout): static
     {
         $this->timeout = $timeout;
 
@@ -96,18 +109,8 @@ class Dockhand
      *
      * @return int
      */
-    public function getTimeout()
+    public function getTimeout(): int
     {
         return $this->timeout;
-    }
-
-    /**
-     * Get an authenticated user instance.
-     *
-     * @return \Laravel\Forge\Resources\User
-     */
-    public function user()
-    {
-        return new User($this->get('user')['user']);
     }
 }

@@ -13,30 +13,30 @@ class DockhandManager
     use ForwardsCalls;
 
     /**
-     * The LaravelOci instance.
+     * The Dockhand instance.
      *
      * @var Dockhand
      */
-    protected Dockhand $oci;
+    protected Dockhand $dockhand;
 
     /**
-     * Create a new LaravelOciManager instance.
+     * Create a new DockhandManager instance.
      *
      * @param string $token
      * @param HttpClient|null $guzzle
      */
     public function __construct(string $token, ?HttpClient $guzzle = null)
     {
-        $this->oci = new Dockhand($token, $guzzle);
+        $this->dockhand = new Dockhand($token, $guzzle);
     }
 
     /**
-     * Dynamically pass methods to the LaravelOci instance.
+     * Dynamically pass methods to the Dockhand instance.
      *
      * @return mixed
      */
     public function __call(string $method, array $parameters)
     {
-        return $this->forwardCallTo($this->oci, $method, $parameters);
+        return $this->forwardCallTo($this->dockhand, $method, $parameters);
     }
 }

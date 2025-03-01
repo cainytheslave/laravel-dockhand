@@ -2,10 +2,11 @@
 
 namespace Cainy\Dockhand;
 
+use Cainy\Dockhand\Services\ClaimService;
+use Cainy\Dockhand\Services\JwtService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Cainy\Dockhand\Commands\DockhandCommand;
-use Cainy\Dockhand\Support\JwtService;
+use Cainy\Dockhand\Commands\NotifyTokenCommand;
 
 class DockhandServiceProvider extends PackageServiceProvider
 {
@@ -13,16 +14,14 @@ class DockhandServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        $this->app->singleton(JwtService::class, function () {
-            return new JwtService();
-        });
+        $this->app->singleton(JwtService::class, fn() => new JwtService());
     }
 
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('laravel-Dockhand')
+            ->name('laravel-dockhand')
             ->hasConfigFile()
-            ->hasCommand(DockhandCommand::class);
+            ->hasCommand(NotifyTokenCommand::class);
     }
 }

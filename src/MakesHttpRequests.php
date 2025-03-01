@@ -43,7 +43,7 @@ trait MakesHttpRequests
     }
 
     /**
-     * Make a POST request to Registry and return the response.
+     * Make a POST request to the registry and return the response.
      *
      * @param string $uri
      * @param array $payload
@@ -56,7 +56,7 @@ trait MakesHttpRequests
     }
 
     /**
-     * Make a PUT request to Registry and return the response.
+     * Make a PUT request to the registry and return the response.
      *
      * @param string $uri
      * @param array $payload
@@ -69,7 +69,7 @@ trait MakesHttpRequests
     }
 
     /**
-     * Make a DELETE request to registry and return the response.
+     * Make a DELETE request to the registry and return the response.
      *
      * @param string $uri
      * @param array $payload
@@ -82,7 +82,7 @@ trait MakesHttpRequests
     }
 
     /**
-     * Make request to registry and return the response.
+     * Make request to the registry and return the response.
      *
      * @param string $verb
      * @param string $uri

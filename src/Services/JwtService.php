@@ -1,6 +1,6 @@
 <?php
 
-namespace Cainy\Dockhand\Support;
+namespace Cainy\Dockhand\Services;
 
 use Base32\Base32;
 use Closure;
@@ -107,7 +107,6 @@ class JwtService
      *
      * @param Closure $closure
      * @return UnencryptedToken
-     * @throws Exception
      */
     public function createRegistryToken(Closure $closure): UnencryptedToken
     {
