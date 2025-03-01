@@ -1,4 +1,5 @@
 <?php
+
 namespace Cainy\Dockhand\Resources;
 
 use Illuminate\Support\Facades\Log;
@@ -7,8 +8,13 @@ use ValueError;
 enum MediaType: string
 {
     // Image Manifest Media Types
-    case IMAGE_MANIFEST_V1 = 'application/vnd.oci.image.manifest.v1+json';
-    case IMAGE_MANIFEST_V1_SIGNED = 'application/vnd.oci.image.manifest.v1+json+signed';
+    case IMAGE_MANIFEST_V1 = 'application/vnd.docker.distribution.manifest.v1+json';
+    case IMAGE_MANIFEST_V1_SIGNED = 'application/vnd.docker.distribution.manifest.v1+prettyjws';
+    case IMAGE_MANIFEST_V2 = 'application/vnd.docker.distribution.manifest.v2+json';
+    case IMAGE_MANIFEST_V2_LIST = 'application/vnd.docker.distribution.manifest.list.v2+json';
+
+    // Container config
+    case CONTAINER_CONFIG_V1 = 'application/vnd.docker.container.image.v1+json';
 
     // Image Index Media Types
     case IMAGE_INDEX_V1 = 'application/vnd.oci.image.index.v1+json';
@@ -42,6 +48,31 @@ enum MediaType: string
     }
 
     /**
+     * Get the media type as a string.
+     *
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->value;
+    }
+
+    /**
+     * Get the manifest types as a string.
+     *
+     * @return string
+     */
+    public static function getManifestTypesAsString(): string
+    {
+        return implode(',', [
+            self::IMAGE_MANIFEST_V1,
+            self::IMAGE_MANIFEST_V1_SIGNED,
+            self::IMAGE_MANIFEST_V2,
+            self::IMAGE_MANIFEST_V2_LIST
+        ]);
+    }
+
+    /**
      * Check if the media type is for an image manifest.
      */
     public function isImageManifest(): bool
@@ -49,6 +80,8 @@ enum MediaType: string
         return in_array($this, [
             self::IMAGE_MANIFEST_V1,
             self::IMAGE_MANIFEST_V1_SIGNED,
+            self::IMAGE_MANIFEST_V2,
+            self::IMAGE_MANIFEST_V2_LIST
         ]);
     }
 

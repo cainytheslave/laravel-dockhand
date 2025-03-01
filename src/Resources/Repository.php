@@ -2,15 +2,51 @@
 
 namespace Cainy\Dockhand\Resources;
 
-use Illuminate\Support\Facades\Date;
+use Cainy\Dockhand\Facades\Dockhand;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Collection;
 
 class Repository
 {
     public string $name;
 
-    public array $tags;
+    /**
+     * Create a new repository instance.
+     *
+     * @param string $name
+     */
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
 
-    public Date $createdAt;
+    /**
+     * Get the name of the repository.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->name;
+    }
 
-    public Date $updatedAt;
+    /**
+     * Get the name of the repository.
+     *
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get a list of all the tags in the repository.
+     *
+     * @throws ConnectionException
+     */
+    public function getTags(): Collection
+    {
+        return Dockhand::getTagsOfRepository($this->name);
+    }
 }

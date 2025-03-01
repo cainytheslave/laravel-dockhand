@@ -2,21 +2,79 @@
 
 namespace Cainy\Dockhand\Resources;
 
-use Illuminate\Support\Facades\Date;
+use Cainy\Dockhand\Facades\Dockhand;
+use Exception;
+use Illuminate\Http\Client\ConnectionException;
 
 class ImageManifest
 {
-    public string $digest;
+    /**
+     * The name of the repository.
+     *
+     * @var string
+     */
+    protected string $repository;
 
-    public MediaType $mediaType;
+    /**
+     * The reference of the image manifest. Either a tag or a digest.
+     *
+     * @var string
+     */
+    protected string $reference;
 
-    public array $config;
+    /**
+     * The media type of the image manifest.
+     *
+     * @var MediaType
+     */
+    protected MediaType $mediaType;
 
-    public array $layers;
+    /**
+     * Docker container configuration object. This configuration item
+     * is a JSON blob that the runtime uses to set up the container.
+     *
+     * @property string $mediaType The MIME type of the referenced object. Generally
+     *                             application/vnd.docker.container.image.v1+json.
+     * @property int $size     The size in bytes of the object. Exists so that a client
+     *                            will have an expected size for the content before validating.
+     * @property string $digest   Content digest identifier, typically a sha256 hash.
+     *
+     * @var array
+     */
+    protected array $config;
 
-    public string $annotations;
+    /**
+     * The layers of the image.
+     *
+     * @var array
+     */
+    protected array $layers;
 
-    public Date $createdAt;
 
-    public Date $updatedAt;
+    /**
+     * Create a new image manifest instance.
+     *
+     * @param string $repository
+     * @param string $reference
+     * @param MediaType $mediaType
+     * @param array $config
+     * @param array $layers
+     */
+    public function __construct(string $repository, string $reference, MediaType $mediaType, array $config, array $layers)
+    {
+        $this->repository = $repository;
+        $this->reference = $reference;
+        $this->mediaType = $mediaType;
+        $this->config = $config;
+        $this->layers = $layers;
+    }
+
+    /**
+     * @throws ConnectionException
+     * @throws Exception
+     */
+    public static function fetch(string $repository, string $reference): ImageManifest
+    {
+        Dockhand::getManifestOfTag($repository, $reference);
+    }
 }

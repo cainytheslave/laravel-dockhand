@@ -3,11 +3,13 @@
 namespace Cainy\Dockhand\Services;
 
 use Base32\Base32;
+use Cainy\Dockhand\Resources\Token;
 use Closure;
 use DateTimeImmutable;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Lcobucci\Clock\FrozenClock;
+use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Ecdsa\Sha256 as ES256;
@@ -20,19 +22,45 @@ use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 use Lcobucci\JWT\Validation\Validator;
 use Ramsey\Uuid\Uuid;
 
-class JwtService
+class TokenService
 {
-    private Configuration $config;
-    private string $kid;
-    private InMemory $publicKey;
-    private InMemory $privateKey;
+    /**
+     * Configuration container for the JWT Builder and Parser.
+     *
+     * @var Configuration
+     */
+    protected Configuration $config;
 
-    public function __construct()
+    /**
+     * Public key used for asymmetric signer. This key is also
+     * used by the registry to verify the incoming requests.
+     *
+     * @var InMemory
+     */
+    protected InMemory $publicKey;
+
+    /**
+     * Private key used for asymmetric signer.
+     *
+     * @var InMemory
+     */
+    protected InMemory $privateKey;
+
+    /**
+     * The key id (kid) gets generated once and is then included
+     * in the token, in order for the registry to know which
+     * public key was used for signing the token.
+     *
+     * @var string
+     */
+    protected string $kid;
+
+    public function __construct(string $privateKeyPath, string $publicKeyPath)
     {
         $signer = new ES256();
 
-        $this->privateKey = InMemory::file(config('oci.jwt_private_key'));
-        $this->publicKey = InMemory::file(config('oci.jwt_public_key'));
+        $this->privateKey = InMemory::file($privateKeyPath);
+        $this->publicKey = InMemory::file($publicKeyPath);
 
         $this->kid = self::generateKeyId($this->privateKey);
 
@@ -85,45 +113,32 @@ class JwtService
     }
 
     /**
-     * Create a general JWT token for use in the application.
+     * Get a builder for constructing a token.
      *
-     * @param Closure $closure
-     * @return UnencryptedToken
+     * @return Builder
      */
-    public function createToken(Closure $closure): UnencryptedToken
+    public function getBuilder(): Builder
     {
-        $builder = $this->config->builder();
-
-        $builder = $builder
-            ->issuedAt(now()->toDateTimeImmutable())
-            ->canOnlyBeUsedAfter(now()->toDateTimeImmutable())
-            ->identifiedBy(Uuid::uuid4()->toString());
-
-        return $closure($builder)->getToken($this->config->signer(), $this->config->signingKey());
+        return $this->config->builder()
+        ->issuedAt(now()->toDateTimeImmutable())
+        ->canOnlyBeUsedAfter(now()->toDateTimeImmutable())
+        ->identifiedBy(Uuid::uuid4()->toString()) //$closure($builder)->getToken($this->config->signer(), $this->config->signingKey());
+        ->withHeader('kid', $this->kid);
     }
 
     /**
-     * Create a JWT token that can be used to authenticate at the registry.
+     * Create and sign the token from the builder.
      *
-     * @param Closure $closure
+     * @param Builder $builder
      * @return UnencryptedToken
      */
-    public function createRegistryToken(Closure $closure): UnencryptedToken
+    public function signToken(Builder $builder): UnencryptedToken
     {
-        $builder = $this->config->builder();
-
-        $builder = $builder
-            ->issuedAt(now()->toDateTimeImmutable())
-            ->canOnlyBeUsedAfter(now()->toDateTimeImmutable())
-            ->expiresAt(now()->addMinutes(5)->toDateTimeImmutable())
-            ->identifiedBy(Uuid::uuid4()->toString())
-            ->withHeader('kid', $this->kid);
-
-        return $closure($builder)->getToken($this->config->signer(), $this->config->signingKey());
+        return $builder->getToken($this->config->signer(), $this->config->signingKey());
     }
 
     /**
-     * Validate a JWT token that was issued by this service.
+     * Validate a token that was issued by this service.
      *
      * @param string $token
      * @param Closure $closure
@@ -131,11 +146,9 @@ class JwtService
      */
     public function validateToken(string $token, Closure $closure): bool
     {
-        // Parse token
         $parser = new Parser(new JoseEncoder());
         $token = $parser->parse($token);
 
-        // Validate token
         $validator = new Validator();
 
         try {

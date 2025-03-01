@@ -2,24 +2,63 @@
 
 namespace Cainy\Dockhand\Actions;
 
+use Cainy\Dockhand\Facades\Dockhand;
+use Cainy\Dockhand\Resources\RegistryApiVersion;
 use Cainy\Dockhand\Resources\Scope;
-use Cainy\Dockhand\Services\JwtService;
-use Exception;
-use GuzzleHttp\Exception\GuzzleException;
-use Lcobucci\JWT\Token\Builder;
+use Cainy\Dockhand\Resources\Token;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Collection;
 
-trait ManagesRegistry {
-
+trait ManagesRegistry
+{
     /**
-     * @throws GuzzleException
+     * Check if registry is online
+     *
+     * @return bool
      */
     function isOnline(): bool
     {
-        $token = JwtService::createRegistryToken(function (Builder $builder) {
-            return $builder->withClaim('access', Scope::get());
-        });
-
-        return $this->get('/'); // TODO
+        try {
+            return $this
+                ->request()
+                ->withToken(Token::toString())
+                ->get('/')
+                ->successful();
+        } catch (ConnectionException $e) {
+            return false;
+        }
     }
 
+    /**
+     * Get the version of the registry api.
+     *
+     * @return RegistryApiVersion
+     * @throws ConnectionException
+     */
+    function getApiVersion(): RegistryApiVersion
+    {
+        $response = $this
+            ->request()
+            ->withToken(Token::toString())
+            ->get('/');
+
+        return match ($response->getHeaderLine('Docker-Distribution-Api-Version')) {
+            'registry/1.0' => RegistryApiVersion::V1,
+            'registry/2.0' => RegistryApiVersion::V2
+        };
+    }
+
+    /**
+     * Get a list of all the repositories in the registry.
+     * Only returns the names of the repositories.
+     *
+     * @return Collection
+     * @throws ConnectionException
+     */
+    function getCatalog(): Collection
+    {
+        return collect(Dockhand::request()
+            ->withToken(Token::withScope(Scope::catalog()))
+            ->get('/_catalog')['repositories']);
+    }
 }
