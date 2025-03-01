@@ -43,6 +43,7 @@ enum MediaType: string
             return self::from($mediaType);
         } catch (ValueError) {
             Log::warning("Unknown media type: {$mediaType}");
+
             return self::CUSTOM;
         }
     }
