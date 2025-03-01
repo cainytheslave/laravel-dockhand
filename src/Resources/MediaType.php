@@ -50,8 +50,6 @@ enum MediaType: string
 
     /**
      * Get the media type as a string.
-     *
-     * @return string
      */
     public function toString(): string
     {
@@ -60,8 +58,6 @@ enum MediaType: string
 
     /**
      * Get the manifest types as a string.
-     *
-     * @return string
      */
     public static function getManifestTypesAsString(): string
     {
@@ -69,7 +65,7 @@ enum MediaType: string
             self::IMAGE_MANIFEST_V1,
             self::IMAGE_MANIFEST_V1_SIGNED,
             self::IMAGE_MANIFEST_V2,
-            self::IMAGE_MANIFEST_V2_LIST
+            self::IMAGE_MANIFEST_V2_LIST,
         ]);
     }
 
@@ -82,7 +78,7 @@ enum MediaType: string
             self::IMAGE_MANIFEST_V1,
             self::IMAGE_MANIFEST_V1_SIGNED,
             self::IMAGE_MANIFEST_V2,
-            self::IMAGE_MANIFEST_V2_LIST
+            self::IMAGE_MANIFEST_V2_LIST,
         ]);
     }
 

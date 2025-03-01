@@ -12,8 +12,6 @@ class Repository
 
     /**
      * Create a new repository instance.
-     *
-     * @param string $name
      */
     public function __construct(string $name)
     {
@@ -22,8 +20,6 @@ class Repository
 
     /**
      * Get the name of the repository.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -32,8 +28,6 @@ class Repository
 
     /**
      * Get the name of the repository.
-     *
-     * @return string
      */
     public function toString(): string
     {

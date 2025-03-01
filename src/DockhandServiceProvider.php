@@ -2,10 +2,10 @@
 
 namespace Cainy\Dockhand;
 
+use Cainy\Dockhand\Commands\NotifyTokenCommand;
 use Cainy\Dockhand\Services\TokenService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Cainy\Dockhand\Commands\NotifyTokenCommand;
 
 class DockhandServiceProvider extends PackageServiceProvider
 {
@@ -13,7 +13,7 @@ class DockhandServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        $this->app->singleton(TokenService::class, function() {
+        $this->app->singleton(TokenService::class, function () {
             return new TokenService(
                 config('dockhand.jwt_private_key'),
                 config('dockhand.jwt_public_key'));

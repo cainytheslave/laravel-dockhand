@@ -10,24 +10,19 @@ use Illuminate\Http\Client\PendingRequest;
 
 class Dockhand
 {
-    use ManagesRegistry,
-        ManagesRepositories,
-        ManagesImageManifests;
+    use ManagesImageManifests,
+        ManagesRegistry,
+        ManagesRepositories;
 
     /**
      * The base URL of the registry.
-     *
-     * @var string
      */
     protected string $baseUrl;
 
     /**
      * The HTTP Client to communicate with the registry instance.
-     *
-     * @var HttpClient
      */
     protected HttpClient $http;
-
 
     /**
      * Create a new Dockhand instance.
@@ -42,8 +37,6 @@ class Dockhand
 
     /**
      * Make a request to the registry.
-     *
-     * @return PendingRequest
      */
     public function request(): PendingRequest
     {
@@ -52,11 +45,6 @@ class Dockhand
 
     /**
      * Transform the items of the collection to the given class.
-     *
-     * @param array $collection
-     * @param string $class
-     * @param array $extraData
-     * @return array
      */
     protected function transformCollection(array $collection, string $class, array $extraData = []): array
     {

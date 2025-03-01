@@ -13,10 +13,8 @@ trait ManagesRegistry
 {
     /**
      * Check if registry is online
-     *
-     * @return bool
      */
-    function isOnline(): bool
+    public function isOnline(): bool
     {
         try {
             return $this
@@ -32,10 +30,9 @@ trait ManagesRegistry
     /**
      * Get the version of the registry api.
      *
-     * @return RegistryApiVersion
      * @throws ConnectionException
      */
-    function getApiVersion(): RegistryApiVersion
+    public function getApiVersion(): RegistryApiVersion
     {
         $response = $this
             ->request()
@@ -52,10 +49,9 @@ trait ManagesRegistry
      * Get a list of all the repositories in the registry.
      * Only returns the names of the repositories.
      *
-     * @return Collection
      * @throws ConnectionException
      */
-    function getCatalog(): Collection
+    public function getCatalog(): Collection
     {
         return collect(Dockhand::request()
             ->withToken(Token::withScope(Scope::catalog()))

@@ -19,7 +19,7 @@ trait ManagesTags
      * @throws ConnectionException
      * @throws Exception
      */
-    function getManifestOfTag(string $repository, string $tag): ImageManifest
+    public function getManifestOfTag(string $repository, string $tag): ImageManifest
     {
         $data = Dockhand::request()
             ->withToken(Token::withScope(Scope::readRepository($repository)))
@@ -35,7 +35,7 @@ trait ManagesTags
         $config = $data['config'] ?? [];
 
         $layers = collect($data['layers'])
-            ->map(fn($layer) => new Layer(
+            ->map(fn ($layer) => new Layer(
                 $repository,
                 $layer['digest'],
                 MediaType::fromString($layer['mediaType']),

@@ -32,7 +32,7 @@ class Token
     /**
      * Create a new TokenBuilder instance.
      *
-     * @param Builder|null $builder Optional custom builder instance.
+     * @param  Builder|null  $builder  Optional custom builder instance.
      */
     final public function __construct(?Builder $builder = null)
     {
@@ -47,10 +47,6 @@ class Token
 
     /**
      * Allow static method calls for better api.
-     *
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
      */
     public static function __callStatic(string $method, array $parameters): mixed
     {
@@ -59,8 +55,6 @@ class Token
 
     /**
      * Generate and return the signed JWT token as string.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -69,58 +63,46 @@ class Token
 
     /**
      * Set the issuer (iss) claim.
-     *
-     * @param string $issuer
-     * @return static
      */
     public function issuedBy(string $issuer): static
     {
         $this->builder = $this->builder->issuedBy($issuer);
+
         return $this;
     }
 
     /**
      * Set the audience (aud) claim.
-     *
-     * @param string $audience
-     * @return static
      */
     public function permittedFor(string $audience): static
     {
         $this->builder = $this->builder->permittedFor($audience);
+
         return $this;
     }
 
     /**
      * Set the expiration time (exp) claim.
-     *
-     * @param Carbon $time
-     * @return static
      */
     public function expiresAt(Carbon $time): static
     {
         $this->builder = $this->builder->expiresAt($time->toDateTimeImmutable());
+
         return $this;
     }
 
     /**
      * Set the "not before" (nbf) claim.
-     *
-     * @param Carbon $time
-     * @return static
      */
     public function canOnlyBeUsedAfter(Carbon $time): static
     {
         $this->builder = $this->builder->canOnlyBeUsedAfter($time->toDateTimeImmutable());
+
         return $this;
     }
 
     /**
      * Add a custom claim.
-     *
-     * @param string $name
-     * @param mixed $value
-     * @return static
      */
     public function withClaim(string $name, mixed $value): static
     {
@@ -135,26 +117,21 @@ class Token
 
     /**
      * Add a registry scope to the token.
-     *
-     * @param Scope $scope
-     * @return static
      */
     public function withScope(Scope $scope): static
     {
         $this->access = array_combine($this->access, $scope->toArray());
+
         return $this;
     }
 
     /**
      * Add a custom header.
-     *
-     * @param string $name
-     * @param mixed $value
-     * @return static
      */
     public function withHeader(string $name, mixed $value): static
     {
         $this->builder = $this->builder->withHeader($name, $value);
+
         return $this;
     }
 
@@ -164,6 +141,7 @@ class Token
     public function sign(): UnencryptedToken
     {
         $this->builder = $this->builder->withClaim('access', $this->access);
+
         return TokenService::signToken($this->builder);
     }
 

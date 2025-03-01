@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Http;
 class RegistryRequestService
 {
     protected string $baseUri;
+
     protected int $timeout;
+
     protected array $defaultHeaders;
 
     public function __construct(string $baseUri, int $timeout = 30)

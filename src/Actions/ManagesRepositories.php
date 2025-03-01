@@ -3,7 +3,6 @@
 namespace Cainy\Dockhand\Actions;
 
 use Cainy\Dockhand\Facades\Dockhand;
-use Cainy\Dockhand\Resources\RegistryApiVersion;
 use Cainy\Dockhand\Resources\Repository;
 use Cainy\Dockhand\Resources\Scope;
 use Cainy\Dockhand\Resources\Tag;
@@ -15,11 +14,8 @@ trait ManagesRepositories
 {
     /**
      * Get a repository by name.
-     *
-     * @param string $repository
-     * @return Repository
      */
-    function getRepository(string $repository): Repository
+    public function getRepository(string $repository): Repository
     {
         return new Repository($repository);
     }
@@ -27,15 +23,13 @@ trait ManagesRepositories
     /**
      * Get a list of all the tags in the repository.
      *
-     * @param string $repository
-     * @return Collection
      * @throws ConnectionException
      */
-    function getTagsOfRepository(string $repository): Collection
+    public function getTagsOfRepository(string $repository): Collection
     {
         return collect(Dockhand::request()
             ->withToken(Token::withScope(Scope::readRepository($repository)))
             ->get("/$repository/tags/list")['tags'])
-            ->map(fn($tag) => new Tag($repository, $tag));
+            ->map(fn ($tag) => new Tag($repository, $tag));
     }
 }

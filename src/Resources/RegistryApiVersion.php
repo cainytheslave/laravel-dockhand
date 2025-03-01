@@ -2,7 +2,8 @@
 
 namespace Cainy\Dockhand\Resources;
 
-enum RegistryApiVersion {
+enum RegistryApiVersion
+{
     case V1;
     case V2;
 }

@@ -11,6 +11,7 @@ use Lcobucci\JWT\UnencryptedToken;
  * @method static Builder getBuilder()
  * @method static UnencryptedToken signToken(Builder $builder)
  * @method static bool validateToken(string $token, Closure $closure)
+ *
  * @see \Cainy\Dockhand\Services\TokenService
  */
 class TokenService extends Facade

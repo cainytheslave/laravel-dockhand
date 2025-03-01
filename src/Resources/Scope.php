@@ -33,8 +33,6 @@ class Scope implements Arrayable, JsonSerializable
 {
     /**
      * The registry access entries.
-     *
-     * @var array
      */
     protected array $access;
 
@@ -79,8 +77,6 @@ class Scope implements Arrayable, JsonSerializable
     /**
      * Allow static method calls for better api.
      *
-     * @param $method
-     * @param $parameters
      * @return mixed
      */
     public static function __callStatic($method, $parameters)
@@ -90,8 +86,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Create a new scope instance.
-     *
-     * @return static
      */
     public static function create(): static
     {
@@ -100,10 +94,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add repository access with custom actions.
-     *
-     * @param string $repository
-     * @param array $actions
-     * @return static
      */
     public function repository(string $repository, array $actions = []): static
     {
@@ -118,8 +108,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Configure the latest repository entry to allow pull access.
-     *
-     * @return static
      */
     public function pull(): static
     {
@@ -130,7 +118,7 @@ class Scope implements Arrayable, JsonSerializable
         $lastIndex = count($this->access) - 1;
         $actions = $this->access[$lastIndex]['actions'];
 
-        if (!in_array(static::PULL, $actions)) {
+        if (! in_array(static::PULL, $actions)) {
             $this->access[$lastIndex]['actions'][] = static::PULL;
         }
 
@@ -139,8 +127,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Configure the latest repository entry to allow push access.
-     *
-     * @return static
      */
     public function push(): static
     {
@@ -151,7 +137,7 @@ class Scope implements Arrayable, JsonSerializable
         $lastIndex = count($this->access) - 1;
         $actions = $this->access[$lastIndex]['actions'];
 
-        if (!in_array(static::PUSH, $actions)) {
+        if (! in_array(static::PUSH, $actions)) {
             $this->access[$lastIndex]['actions'][] = static::PUSH;
         }
 
@@ -160,8 +146,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Configure the latest repository entry to allow both push and pull access.
-     *
-     * @return static
      */
     public function pushAndPull(): static
     {
@@ -170,8 +154,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Configure the latest repository entry to allow both pull and push access.
-     *
-     * @return static
      */
     public function pullAndPush(): static
     {
@@ -180,8 +162,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Set the latest repository entry to allow deletion.
-     *
-     * @return static
      */
     public function delete(): static
     {
@@ -192,7 +172,7 @@ class Scope implements Arrayable, JsonSerializable
         $lastIndex = count($this->access) - 1;
         $actions = $this->access[$lastIndex]['actions'];
 
-        if (!in_array(static::DELETE, $actions)) {
+        if (! in_array(static::DELETE, $actions)) {
             $this->access[$lastIndex]['actions'][] = static::DELETE;
         }
 
@@ -201,9 +181,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add a full repository with pull, push, and delete access.
-     *
-     * @param string $repository
-     * @return static
      */
     public function fullRepository(string $repository): static
     {
@@ -212,9 +189,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add a read-only repository.
-     *
-     * @param string $repository
-     * @return static
      */
     public function readRepository(string $repository): static
     {
@@ -223,9 +197,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add a write-only repository.
-     *
-     * @param string $repository
-     * @return static
      */
     public function writeRepository(string $repository): static
     {
@@ -234,11 +205,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add an image repository with custom actions.
-     *
-     * @param string $namespace
-     * @param string $repository
-     * @param array $actions
-     * @return static
      */
     public function image(string $namespace, string $repository, array $actions = []): static
     {
@@ -247,10 +213,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add pull access for an image.
-     *
-     * @param string $namespace
-     * @param string $repository
-     * @return static
      */
     public function pullImage(string $namespace, string $repository): static
     {
@@ -259,10 +221,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add push access for an image.
-     *
-     * @param string $namespace
-     * @param string $repository
-     * @return static
      */
     public function pushImage(string $namespace, string $repository): static
     {
@@ -271,10 +229,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add full access for an image.
-     *
-     * @param string $namespace
-     * @param string $repository
-     * @return static
      */
     public function fullImage(string $namespace, string $repository): static
     {
@@ -283,9 +237,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Add catalog access.
-     *
-     * @param array $actions
-     * @return static
      */
     public function catalog(array $actions = ['*']): static
     {
@@ -300,8 +251,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Get the access as an array.
-     *
-     * @return array
      */
     public function get(): array
     {
@@ -310,9 +259,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Get the access at a specific index.
-     *
-     * @param int $index
-     * @return array|null
      */
     public function getAt(int $index): ?array
     {
@@ -321,8 +267,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Check if the scope is empty.
-     *
-     * @return bool
      */
     public function isEmpty(): bool
     {
@@ -331,8 +275,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Get the scope as a string compatible with Docker registry auth.
-     *
-     * @return string
      */
     public function toString(): string
     {
@@ -358,8 +300,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Get all access entries as an array.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -368,9 +308,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Get all access entries as JSON.
-     *
-     * @param int $options
-     * @return string
      */
     public function toJson(int $options = 0): string
     {
@@ -379,8 +316,6 @@ class Scope implements Arrayable, JsonSerializable
 
     /**
      * Specify data which should be serialized to JSON.
-     *
-     * @return array
      */
     public function jsonSerialize(): array
     {
