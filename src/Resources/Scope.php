@@ -3,322 +3,343 @@
 namespace Cainy\Dockhand\Resources;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Facades\Log;
 use JsonSerializable;
+use function implode;
 
 /**
  * Manages Docker registry access scopes for authentication.
- *
- * @method static static repository(string $repository, array $actions = []) Add repository access with custom actions.
- * @method static static pull() Configure the latest repository entry to allow pull access.
- * @method static static push() Configure the latest repository entry to allow push access.
- * @method static static pushAndPull() Configure the latest repository entry to allow both push and pull access.
- * @method static static pullAndPush() Configure the latest repository entry to allow both pull and push access.
- * @method static static delete() Set the latest repository entry to allow deletion.
- * @method static static fullRepository(string $repository) Add a full repository with pull, push, and delete access.
- * @method static static readRepository(string $repository) Add a read-only repository.
- * @method static static writeRepository(string $repository) Add a write-only repository.
- * @method static static image(string $namespace, string $repository, array $actions = []) Add an image repository with custom actions.
- * @method static static pullImage(string $namespace, string $repository) Add pull access for an image.
- * @method static static pushImage(string $namespace, string $repository) Add push access for an image.
- * @method static static fullImage(string $namespace, string $repository) Add full access for an image.
- * @method static static catalog(array $actions = ['*']) Add catalog access.
- * @method static array get() Get the access as an array.
- * @method static array|null getAt(int $index) Get the access at a specific index.
- * @method static bool isEmpty() Check if the scope is empty.
- * @method static string toString() Get the scope as a string compatible with Docker registry auth.
- * @method static array toArray() Get all access entries as an array.
- * @method static string toJson(int $options = 0) Get all access entries as JSON.
  */
 class Scope implements Arrayable, JsonSerializable
 {
     /**
-     * The registry access entries.
+     * @var ScopeResourceType The type of resource.
      */
-    protected array $access;
+    protected ScopeResourceType $type;
 
     /**
-     * The pull action.
-     *
-     * @var string
+     * @var string The name of the resource.
      */
-    final public const string PULL = 'pull';
+    protected string $name;
 
     /**
-     * The push action.
-     *
-     * @var string
+     * @var bool Whether to allow pull action.
      */
-    final public const string PUSH = 'push';
+    protected bool $allowPull = false;
 
     /**
-     * The delete action.
-     *
-     * @var string
+     * @var bool Whether to allow push action.
      */
-    final public const string DELETE = 'delete';
+    protected bool $allowPush = false;
 
     /**
-     * Allows all actions.
-     *
-     * @var string
+     * @var bool Whether to allow delete action.
      */
-    final public const string ALL = '*';
+    protected bool $allowDelete = false;
 
     /**
-     * Create a new scope instance.
-     *
-     * @return void
+     * @var array Allowed actions.
      */
-    final public function __construct()
-    {
-        $this->access = [];
-    }
-
-    /**
-     * Allow static method calls for better api.
-     *
-     * @return mixed
-     */
-    public static function __callStatic($method, $parameters)
-    {
-        return (new static)->$method(...$parameters);
+    protected array $actions {
+        get {
+            $arr = [];
+            if ($this->allowPull) {
+                $arr[] = 'pull';
+            }
+            if ($this->allowPush) {
+                $arr[] = 'push';
+            }
+            if ($this->allowDelete) {
+                $arr[] = 'delete';
+            }
+            if ($this->allowAll()) {
+                $arr[] = '*';
+            }
+            return $arr;
+        }
     }
 
     /**
      * Create a new scope instance.
      */
-    public static function create(): static
+    public function __construct()
     {
-        return new static;
+        $this->allowPull = false;
+        $this->allowPush = false;
+        $this->allowDelete = false;
     }
 
     /**
-     * Add repository access with custom actions.
+     * Create a new scope instance by parsing a scope string.
+     *
+     * @param string $scope
+     * @return static
      */
-    public function repository(string $repository, array $actions = []): static
+    public static function fromString(string $scope): static
     {
-        $this->access[] = [
-            'type' => 'repository',
-            'name' => $repository,
-            'actions' => $actions,
-        ];
+        if (!preg_match('/^([a-z0-9]+(?:\([a-z0-9]+\))?):([^:]+):([a-z,*]+)$/', $scope, $matches)) {
+            throw new \InvalidArgumentException("Invalid scope format: $scope");
+        }
 
+        [, $resourceType, $resourceName, $actionString] = $matches;
+
+        Log::channel('stderr')->info('Resource type: ' . $resourceType);
+
+        $type = ScopeResourceType::from($resourceType);
+        $actions = explode(',', $actionString);
+
+        $instance = new static();
+
+        $instance->type = $type;
+        $instance->name = $resourceName;
+
+        if (in_array('pull', $actions)) {
+            $instance->allowPull();
+        }
+
+        if (in_array('push', $actions)) {
+            $instance->allowPush();
+        }
+
+        if (in_array('delete', $actions)) {
+            $instance->allowDelete();
+        }
+
+        if (in_array('*', $actions)) {
+            $instance->allowAll();
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Add pull access.
+     */
+    public function allowPull(?bool $enabled = true): static
+    {
+        $this->allowPull = $enabled;
         return $this;
     }
 
     /**
-     * Configure the latest repository entry to allow pull access.
+     * Add push access.
      */
-    public function pull(): static
+    public function allowPush(bool $enabled = true): static
     {
-        if (empty($this->access)) {
-            return $this;
-        }
-
-        $lastIndex = count($this->access) - 1;
-        $actions = $this->access[$lastIndex]['actions'];
-
-        if (! in_array(static::PULL, $actions)) {
-            $this->access[$lastIndex]['actions'][] = static::PULL;
-        }
-
+        $this->allowPush = $enabled;
         return $this;
     }
 
     /**
-     * Configure the latest repository entry to allow push access.
+     * Add delete access.
      */
-    public function push(): static
+    public function allowDelete(bool $enabled = true): static
     {
-        if (empty($this->access)) {
-            return $this;
-        }
-
-        $lastIndex = count($this->access) - 1;
-        $actions = $this->access[$lastIndex]['actions'];
-
-        if (! in_array(static::PUSH, $actions)) {
-            $this->access[$lastIndex]['actions'][] = static::PUSH;
-        }
-
+        $this->allowDelete = $enabled;
         return $this;
     }
 
     /**
-     * Configure the latest repository entry to allow both push and pull access.
+     * Allow all actions.
      */
-    public function pushAndPull(): static
+    public function allowAll(): static
     {
-        return $this->push()->pull();
-    }
-
-    /**
-     * Configure the latest repository entry to allow both pull and push access.
-     */
-    public function pullAndPush(): static
-    {
-        return $this->pushAndPull();
-    }
-
-    /**
-     * Set the latest repository entry to allow deletion.
-     */
-    public function delete(): static
-    {
-        if (empty($this->access)) {
-            return $this;
-        }
-
-        $lastIndex = count($this->access) - 1;
-        $actions = $this->access[$lastIndex]['actions'];
-
-        if (! in_array(static::DELETE, $actions)) {
-            $this->access[$lastIndex]['actions'][] = static::DELETE;
-        }
-
+        $this->allowPull = true;
+        $this->allowPush = true;
+        $this->allowDelete = true;
         return $this;
     }
 
     /**
-     * Add a full repository with pull, push, and delete access.
+     * Factory method to create a new catalog scope.
      */
-    public function fullRepository(string $repository): static
+    public function catalog(): static
     {
-        return $this->repository($repository)->pushAndPull()->delete();
+        $instance = new static();
+        $instance->type = ScopeResourceType::Registry;
+        $instance->name = 'catalog';
+        $instance->allowAll();
+
+        return $instance;
     }
 
     /**
-     * Add a read-only repository.
+     * Factory method to create a new scope for a repo.
+     *
+     * @param string $repo The name of the repository.
+     * @return Scope
      */
-    public function readRepository(string $repository): static
+    public function repository(string $repo): static
     {
-        return $this->repository($repository)->pull();
+        $instance = new static();
+        $instance->type = ScopeResourceType::Repository;
+        $instance->name = $repo;
+
+        return $instance;
     }
 
     /**
-     * Add a write-only repository.
+     * Factory method to create a new scope for a repo write push access.
+     *
+     * @param string $repo The name of the repository.
+     * @return Scope
      */
-    public function writeRepository(string $repository): static
+    public function writeRepository(string $repo): static
     {
-        return $this->repository($repository)->push();
+        $instance = new static();
+        $instance->type = ScopeResourceType::Repository;
+        $instance->name = $repo;
+        $instance->allowPush();
+
+        return $instance;
     }
 
     /**
-     * Add an image repository with custom actions.
+     * Factory method to create a new scope for a repo with pull access.
+     *
+     * @param string $repo The name of the repository.
+     * @return Scope
      */
-    public function image(string $namespace, string $repository, array $actions = []): static
+    public function readRepository(string $repo): static
     {
-        return $this->repository("$namespace/$repository", $actions);
+        $instance = new static();
+        $instance->type = ScopeResourceType::Repository;
+        $instance->name = $repo;
+        $instance->allowPull();
+
+        return $instance;
     }
 
-    /**
-     * Add pull access for an image.
-     */
-    public function pullImage(string $namespace, string $repository): static
+    public function allowPushAndPull(): static
     {
-        return $this->image($namespace, $repository)->pull();
-    }
-
-    /**
-     * Add push access for an image.
-     */
-    public function pushImage(string $namespace, string $repository): static
-    {
-        return $this->image($namespace, $repository)->push();
-    }
-
-    /**
-     * Add full access for an image.
-     */
-    public function fullImage(string $namespace, string $repository): static
-    {
-        return $this->image($namespace, $repository)->pushAndPull()->delete();
-    }
-
-    /**
-     * Add catalog access.
-     */
-    public function catalog(array $actions = ['*']): static
-    {
-        $this->access[] = [
-            'type' => 'registry',
-            'name' => 'catalog',
-            'actions' => $actions,
-        ];
-
+        $this->allowPull = true;
+        $this->allowPush = true;
         return $this;
     }
 
     /**
-     * Get the access as an array.
+     * Allow no actions.
      */
-    public function get(): array
+    public function allowNone(): static
     {
-        return $this->access;
+        $this->allowPull = false;
+        $this->allowPush = false;
+        $this->allowDelete = false;
+        return $this;
     }
 
     /**
-     * Get the access at a specific index.
+     * Check if the scope has pull access.
+     *
+     * @return bool
      */
-    public function getAt(int $index): ?array
+    public function hasPull(): bool
     {
-        return $this->access[$index] ?? null;
+        return $this->allowPull;
     }
 
     /**
-     * Check if the scope is empty.
+     * Check if the scope has push access.
+     *
+     * @return bool
      */
-    public function isEmpty(): bool
+    public function hasPush(): bool
     {
-        return empty($this->access);
+        return $this->allowPush;
     }
 
     /**
-     * Get the scope as a string compatible with Docker registry auth.
+     * Check if the scope has delete access.
+     *
+     * @return bool
      */
-    public function toString(): string
+    public function hasDelete(): bool
     {
-        $parts = [];
-
-        foreach ($this->access as $entry) {
-            $actions = implode(',', $entry['actions']);
-            $parts[] = "{$entry['type']}:{$entry['name']}:{$actions}";
-        }
-
-        return implode(' ', $parts);
+        return $this->allowDelete;
     }
 
     /**
-     * Get the string representation of the scope.
+     * Convert the scope to a registry-compatible string.
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toString();
+        return "{$this->type}:{$this->name}:" . implode(',', $this->actions);
     }
 
     /**
-     * Get all access entries as an array.
+     * Convert the scope to a registry-compatible string.
+     *
+     * @return string
      */
-    public function toArray(): array
+    public function toString(): string
     {
-        return $this->access;
+        return "{$this->type}:{$this->name}:" . implode(',', $this->actions);
     }
 
     /**
-     * Get all access entries as JSON.
+     * Convert the scope to JSON.
+     *
+     * @param int $options
+     * @return string
      */
     public function toJson(int $options = 0): string
     {
-        return json_encode($this->access, $options);
+        return json_encode($this->toArray(), $options);
     }
 
     /**
-     * Specify data which should be serialized to JSON.
+     * Convert the scope to an array.
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'type' => $this->type->value,
+            'name' => $this->name,
+            'actions' => $this->allowAll() ? ['*'] : $this->actions,
+        ];
+    }
+
+    /**
+     * Define how the scope should be serialized to JSON.
+     *
+     * @return array
      */
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * Get the resource type of the scope.
+     *
+     * @return ScopeResourceType
+     */
+    public function getResourceType(): ScopeResourceType
+    {
+        return $this->type;
+    }
+
+    /**
+     * Get the resource name of the scope.
+     *
+     * @return string
+     */
+    public function getResourceName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get the actions of the scope.
+     *
+     * @return array
+     */
+    public function getActions(): array
+    {
+        return $this->actions;
     }
 }

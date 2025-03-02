@@ -3,8 +3,8 @@
 namespace Cainy\Dockhand\Services;
 
 use Base32\Base32;
-use Cainy\Dockhand\Resources\Token;
 use Closure;
+use DateTimeImmutable;
 use Illuminate\Support\Facades\Log;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\JWT\Builder;
@@ -19,6 +19,7 @@ use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 use Lcobucci\JWT\Validation\Validator;
 use Ramsey\Uuid\Uuid;
+use function now;
 
 class TokenService
 {
@@ -105,9 +106,7 @@ class TokenService
     public function getBuilder(): Builder
     {
         return $this->config->builder()
-            ->issuedAt(now()->toDateTimeImmutable())
-            ->canOnlyBeUsedAfter(now()->toDateTimeImmutable())
-            ->identifiedBy(Uuid::uuid4()->toString()) // $closure($builder)->getToken($this->config->signer(), $this->config->signingKey());
+            ->identifiedBy(Uuid::uuid4()->toString())
             ->withHeader('kid', $this->kid);
     }
 
@@ -116,7 +115,9 @@ class TokenService
      */
     public function signToken(Builder $builder): UnencryptedToken
     {
-        return $builder->getToken($this->config->signer(), $this->config->signingKey());
+        return $builder
+            ->issuedAt((new DateTimeImmutable)->setTimestamp(now()->getTimestamp()))
+            ->getToken($this->config->signer(), $this->config->signingKey());
     }
 
     /**

@@ -6,4 +6,9 @@ return [
     'jwt_public_key' => env('DOCKHAND_PUBLIC_KEY'),
     'authority_name' => env('DOCKHAND_AUTHORITY_NAME', 'auth'),
     'registry_name' => env('DOCKHAND_REGISTRY_NAME', 'registry'),
+
+    'notifications' => [
+        'enabled' => env('DOCKHAND_REGISTRY_EVENTS', true),
+        'route' => '/dockhand/notify',
+    ],
 ];

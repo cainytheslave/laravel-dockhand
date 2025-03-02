@@ -2,9 +2,8 @@
 
 namespace Cainy\Dockhand\Commands;
 
-use Cainy\Dockhand\Support\JwtService;
+use Cainy\Dockhand\Facades\Token;
 use Illuminate\Console\Command;
-use Lcobucci\JWT\Builder;
 
 class NotifyTokenCommand extends Command
 {
@@ -12,18 +11,11 @@ class NotifyTokenCommand extends Command
 
     public $description = 'Create the authentication token for notifying the application of registry events';
 
-    public function handle(JwtService $jwtService): int
+    public function handle(): int
     {
-        $token = $jwtService->createToken(function (Builder $builder) {
-            return $builder
-                ->issuedAt(config('dockhand.authority_name'))
-                ->permittedFor(config('dockhand.registry_name'))
-                ->withClaim('access', 'notify');
-        });
-
         $this->info('Generated new authentication token:');
         $this->newLine();
-        $this->line($token->toString());
+        $this->line(Token::withClaim('access', 'notify'));
 
         return self::SUCCESS;
     }

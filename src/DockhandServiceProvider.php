@@ -26,5 +26,9 @@ class DockhandServiceProvider extends PackageServiceProvider
             ->name('laravel-dockhand')
             ->hasConfigFile()
             ->hasCommand(NotifyTokenCommand::class);
+
+        if (config('dockhand.notifications.enabled')) {
+            $package->hasRoute('notifications');
+        }
     }
 }
